@@ -1,0 +1,19 @@
+{
+    "name": "jackmarchant/slim-app",
+    "version": "0.1",
+    "authors": [{
+        "email": "jack@jackmarchant.com",
+        "name": "Jack Marchant"
+    }],
+    "description": "A sample Slim App",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/app/"
+        }
+    },
+    "require": {
+        "slim/slim": "^3.12",
+        "monolog/monolog": "^1.24",
+        "slim/twig-view": "^2.5"
+    }
+}

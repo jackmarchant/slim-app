@@ -22,17 +22,32 @@ class User {
      * 
      * @param array $params
      */
-    public function login(array $params): UserModel
+    public function login(array $params): ?UserModel
+    {
+        // try to find the user by their email
+        $found = UserModel::where('email', '=', $params['email'])->first();
+        // if we find the user, verify their password matches
+        if ($found) {
+            $verified = password_verify($params['password'], $found->password);
+            $this->logger->info("User ID: $found->id logged in.");
+            return $found;
+        }
+
+        return $this->create($params);
+    }
+
+    /**
+     * Create a new User
+     * 
+     * @param array $params
+     */
+    public function create(array $params): UserModel
     {
         $user = new UserModel();
-        // TODO: validate params
         $user->email = $params['email'];
-        // TODO: hash password
-        $user->password = $params['password'];
-        // $user->created_at = new \DateTime();
+        $user->password = password_hash($params['password'], PASSWORD_DEFAULT);
         $user->save();
-        $this->logger->info('User created ' . $params);
-
+        $this->logger->info("User ID: $user->id created.");
         return $user;
     }
 }

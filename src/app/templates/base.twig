@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/resources/css/style.css" />
+
+    <title>Twigger</title>
+  </head>
+  <body>
+    {% if not hideNav %}
+    <nav class="navbar navbar-light bg-white">
+        <a href="/" class="navbar-brand">Twigger</a>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <a href="/" class="btn btn-sm btn-danger">Logout</a>
+          </li>
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </body>
+</html>

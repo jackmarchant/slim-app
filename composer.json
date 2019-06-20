@@ -1,6 +1,7 @@
 {
     "name": "jackmarchant/slim-app",
     "version": "0.1",
+    "license": "MIT",
     "authors": [{
         "email": "jack@jackmarchant.com",
         "name": "Jack Marchant"
@@ -14,6 +15,8 @@
     "require": {
         "slim/slim": "^3.12",
         "monolog/monolog": "^1.24",
-        "slim/twig-view": "^2.5"
+        "slim/twig-view": "^2.5",
+        "illuminate/database": "^5.8",
+        "robmorgan/phinx": "^0.10.7"
     }
 }

@@ -5,8 +5,12 @@ namespace App\Services;
 use Slim\Container;
 
 use App\Model\User as UserModel;
+use App\Email\ResestPassword;
+use \App\Traits\UrlGenerator;
 
 class User {
+
+    use UrlGenerator;
 
     /** @var string The key for storing session state */
     const SESSION_KEY = 'user_id';
@@ -18,6 +22,7 @@ class User {
     {
         $this->db = $c->get('db');
         $this->logger = $c->get('logger');
+        $this->mailer = $c->get('mailer');
     }
 
     /**
@@ -56,6 +61,7 @@ class User {
             'email' => $params['email'],
             'password' => password_hash($params['password'], PASSWORD_DEFAULT),
         ]);
+        $this->mailer->send(new \App\Email\SignedUp($user->email));
         $this->logger->info("User ID: $user->id created.");
         return $user;
     }
@@ -63,15 +69,67 @@ class User {
     /** 
      * Determine whether the user is currently logged in
      */
-    public function loggedIn(): bool {
+    public function loggedIn(): bool 
+    {
         return isset($_SESSION[self::SESSION_KEY]);
     }
 
     /** 
      * Log the user out
      */
-    public function logout(): bool {
+    public function logout(): bool 
+    {
         unset($_SESSION[self::SESSION_KEY]);
         return !$this->loggedIn();
+    }
+
+    /**
+     * Generate a password reset token and email
+     * 
+     * @param string $email 
+     */
+    public function resetPassword($email): bool
+    {
+        $user = UserModel::where('email', '=', $email)->first();
+        if (!$user) {
+            return false;
+        }
+
+        $user->password_reset_token = bin2hex(random_bytes(52));
+        $user->save();
+        $user->refresh();
+
+        return $this->mailer->send(new \App\Email\ResetPassword(
+            $user->email,
+            ['url' => $this->generateUrl('reset-password/' . $user->password_reset_token)]
+        ));
+    }
+
+    /**
+     * Find a user by their password reset token
+     * 
+     * @param string $token
+     */
+    public function findByToken(string $token): ?UserModel
+    {
+        return UserModel::where('password_reset_token', '=', $token)->first();
+    }
+
+    /**
+     * Update a user's password
+     * 
+     * @param ModelUser $user The user to be updated
+     * @param array $params An array of attributes
+     */
+    public function updatePassword(UserModel $user, array $params): bool {
+        if (isset($params['password']) && isset($params['confirmPassword']) && (
+            $params['password'] == $params['confirmPassword']
+        )) {
+            $user->password_reset_token = null;
+            $user->password = password_hash($params['password'], PASSWORD_DEFAULT);
+            return $user->save();
+        }
+
+        return false;
     }
 }

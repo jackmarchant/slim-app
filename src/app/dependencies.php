@@ -13,8 +13,10 @@ use Slim\Views\TwigExtension;
 /** Capsule */
 use Illuminate\Database\Capsule\Manager as Capsule;
 
+/** App */
 use App\Controllers\PageController;
 use App\Services\User as UserService;
+use App\Services\Mailer;
 
 $container = $app->getContainer();
 
@@ -33,6 +35,11 @@ $container['db'] = function($c) {
     $capsule->setAsGlobal();
     
     return $capsule;
+};
+
+// Register our mailer
+$container['mailer'] = function($c) {
+    return new Mailer(new \SendGrid(getenv('SENDGRID_API_KEY')));
 };
 
 // Register Twig View helper

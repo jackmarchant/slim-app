@@ -8,6 +8,9 @@ use App\Model\User as UserModel;
 
 class User {
 
+    /** @var string The key for storing session state */
+    const SESSION_KEY = 'user_id';
+
     /**
      * @param Container $c
      */
@@ -29,11 +32,16 @@ class User {
         // if we find the user, verify their password matches
         if ($found) {
             $verified = password_verify($params['password'], $found->password);
-            $this->logger->info("User ID: $found->id logged in.");
-            return $found;
+            if ($verified) {
+                $this->logger->info("User ID: $found->id logged in.");
+                $_SESSION['user_id'] = $found->id;
+                return $found;
+            }
+            return null;
         }
 
-        return $this->create($params);
+        $user = $this->create($params);
+        return $this->login($params);
     }
 
     /**
@@ -43,11 +51,27 @@ class User {
      */
     public function create(array $params): UserModel
     {
-        $user = new UserModel();
-        $user->email = $params['email'];
-        $user->password = password_hash($params['password'], PASSWORD_DEFAULT);
-        $user->save();
+        
+        $user = UserModel::create([
+            'email' => $params['email'],
+            'password' => password_hash($params['password'], PASSWORD_DEFAULT),
+        ]);
         $this->logger->info("User ID: $user->id created.");
         return $user;
+    }
+
+    /** 
+     * Determine whether the user is currently logged in
+     */
+    public function loggedIn(): bool {
+        return isset($_SESSION[self::SESSION_KEY]);
+    }
+
+    /** 
+     * Log the user out
+     */
+    public function logout(): bool {
+        unset($_SESSION[self::SESSION_KEY]);
+        return !$this->loggedIn();
     }
 }

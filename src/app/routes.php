@@ -6,12 +6,16 @@ use App\Controllers\PageController;
 
 /** 
  * Creates a route string with Controller:Action
+ * 
+ * @param string $controller A Controller
+ * @param string $action The Controller's handler function
  */
-function route(string $contr, string $action) : string
+function route(string $controller, string $action) : string
 {
-    return "$contr:$action";
+    return "$controller:$action";
 }
 
 $app->get('/', route(PageController::class, 'index'));
 $app->post('/login', route(PageController::class, 'login'));
 $app->get('/dashboard', route(PageController::class, 'dashboard'));
+$app->get('/logout', route(PageController::class, 'logout'));

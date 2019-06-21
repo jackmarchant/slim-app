@@ -14,31 +14,81 @@ class PageController
     /**
      * @param ContainerInterface $c
      */
-    public function __construct($c)
+    public function __construct(ContainerInterface $c)
     {
       $this->view = $c->get('view');
+      $this->logger = $c->get('logger');
       $this->userService = $c->get('service.user');
     }
 
     /**
+     * The index route for the app
+     * 
      * @param Request $request
      * @param Response $response
      * @param array $args
      */
     public function index(Request $request, Response $response, array $args): Response
     {
-      return $this->view->render($response, 'login.twig', ['hideNav' => true]);
+        if (isset($_SESSION['user_id'])) {
+            $this->logger->info('Redirecting logged in user');
+            return $response->withRedirect('/dashboard');
+        }
+        
+        return $this->view->render($response, 'login.twig', ['hideNav' => true]);
     }
 
+    /**
+     * Handles a POST request for the user to login
+     * 
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     */
     public function login(Request $request, Response $response, array $args): Response
     {
-        $this->userService->login($request->getParams());
-        print_r(get_class_methods($response));
-        return $response->withRedirect('/dashboard');
+        $params = $request->getParams();
+        if ($this->userService->login($params)) {
+            return $response->withRedirect('/dashboard');
+        }
+
+        return $this->view->render($response, 'login.twig', [
+          'error' => 'Sorry, your email or password is incorrect. Please try again',
+          'hideNav' => true,
+          'email' => $params['email'],
+        ]);
     }
 
+    /**
+     * Logout a logged in user
+     * 
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     */
+    public function logout(Request $request, Response $response, array $args): Response
+    {
+        if ($this->userService->logout()) {
+          return $this->view->render($response, 'login.twig', [
+            'hideNav' => true, 
+            'success' => 'You have successfully logged out.'
+          ]);
+        }
+    }
+
+    /**
+     * The main route for the app, when user is logged in
+     * 
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     */
     public function dashboard(Request $request, Response $response, array $args): Response
     {
-        return $this->view->render($response, 'dashboard.twig');
+        if ($this->userService->loggedIn()) {
+            return $this->view->render($response, 'dashboard.twig');
+        }
+
+        return $response->withRedirect('/');
     }
 }

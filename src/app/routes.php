@@ -17,6 +17,7 @@ function route(string $controller, string $action) : string
 
 $app->get('/', route(PageController::class, 'index'));
 $app->get('/login', route(PageController::class, 'index'));
+$app->get('/signup', route(PageController::class, 'signup'));
 $app->post('/login', route(PageController::class, 'login'));
 $app->get('/dashboard', route(PageController::class, 'dashboard'));
 $app->get('/logout', route(PageController::class, 'logout'));

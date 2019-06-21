@@ -39,6 +39,23 @@ class PageController
     }
 
     /**
+     * The signup route for the app
+     * 
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     */
+    public function signup(Request $request, Response $response, array $args): Response
+    {
+        if (isset($_SESSION['user_id'])) {
+            $this->logger->info('Redirecting logged in user');
+            return $response->withRedirect('/dashboard');
+        }
+        
+        return $this->view->render($response, 'signup.twig', ['hideNav' => true]);
+    }
+
+    /**
      * Handles a POST request for the user to login
      * 
      * @param Request $request
@@ -48,6 +65,15 @@ class PageController
     public function login(Request $request, Response $response, array $args): Response
     {
         $params = $request->getParams();
+      
+        if (isset($params['confirmPassword']) && $params['password'] != $params['confirmPassword']) {
+          return $this->view->render($response, 'signup.twig', [
+            'error' => 'Sorry, those passwords don\'t match. Please try again',
+            'hideNav' => true,
+            'email' => $params['email'],
+          ]);
+        }
+
         if ($this->userService->login($params)) {
             return $response->withRedirect('/dashboard');
         }

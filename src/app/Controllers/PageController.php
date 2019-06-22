@@ -19,6 +19,7 @@ class PageController
       $this->view = $c->get('view');
       $this->logger = $c->get('logger');
       $this->userService = $c->get('service.user');
+      $this->postService = $c->get('service.post');
     }
 
     /**
@@ -92,6 +93,10 @@ class PageController
      */
     public function logout(Request $request, Response $response, array $args): Response
     {
+        if (!$this->userService->currentUser()) {
+          return $response->withRedirect('/');
+        }
+      
         if ($this->userService->logout()) {
           return $this->view->render($response, 'login.twig', [
             'success' => 'You have successfully logged out.'
@@ -109,7 +114,12 @@ class PageController
     public function dashboard(Request $request, Response $response, array $args): Response
     {
         if ($this->userService->loggedIn()) {
-            return $this->view->render($response, 'dashboard.twig', ['showNav' => true]);
+            $posts = $this->postService->findAll();
+            return $this->view->render(
+              $response, 
+              'dashboard.twig', 
+              ['showNav' => true, 'posts' => $posts]
+            );
         }
 
         return $response->withRedirect('/');
@@ -173,5 +183,22 @@ class PageController
 
         $token = $params['resetToken'];
         return $response->withRedirect("/reset-password/$token");
+    }
+
+    /**
+     * Create a new post for a user
+     * 
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     */
+    public function createPost(Request $request, Response $response, array $args): Response
+    {
+        $params = $request->getParams();
+        $user = $this->userService->currentUser();
+        
+        $this->postService->create(['content' => $params['content'], 'user_id' => $user->id]);
+
+        return $response->withRedirect('/dashboard');
     }
 }

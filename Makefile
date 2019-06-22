@@ -4,7 +4,7 @@ PHINX_PATH=vendor/bin/phinx
 migrate:
 	php $(PHINX_PATH) migrate -c $(PHINX_CONFIG)
 
-NAME?=new_migration
+NAME?=NewMigration
 create-migration:
 	php $(PHINX_PATH) create $(NAME) -c $(PHINX_CONFIG)
 

@@ -14,5 +14,13 @@ class User extends Model {
      * 
      * @var array
      */
-    protected $fillable = ['email', 'password'];
+    protected $fillable = ['email', 'password', 'username'];
+
+    /**
+     * Get the posts for the user
+     */
+    public function posts()
+    {
+        return $this->hasMany('App\Model\Post');
+    }
 }

@@ -16,6 +16,7 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 /** App */
 use App\Controllers\PageController;
 use App\Services\User as UserService;
+use App\Services\Post as PostService;
 use App\Services\Mailer;
 
 $container = $app->getContainer();
@@ -57,6 +58,10 @@ $container['view'] = function ($c) {
 
 $container['service.user'] = function($c) {
     return new UserService($c);
+};
+
+$container['service.post'] = function($c) {
+    return new PostService($c);
 };
 
 // Register PageController

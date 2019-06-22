@@ -56,10 +56,11 @@ class User {
      */
     public function create(array $params): UserModel
     {
-        
+        $username = $params['username'] ?? 'user' . substr(md5(mt_rand()), 0, 7); 
         $user = UserModel::create([
             'email' => $params['email'],
             'password' => password_hash($params['password'], PASSWORD_DEFAULT),
+            'username' => $username
         ]);
         $this->mailer->send(new \App\Email\SignedUp($user->email));
         $this->logger->info("User ID: $user->id created.");
@@ -121,7 +122,8 @@ class User {
      * @param ModelUser $user The user to be updated
      * @param array $params An array of attributes
      */
-    public function updatePassword(UserModel $user, array $params): bool {
+    public function updatePassword(UserModel $user, array $params): bool 
+    {
         if (isset($params['password']) && isset($params['confirmPassword']) && (
             $params['password'] == $params['confirmPassword']
         )) {
@@ -131,5 +133,29 @@ class User {
         }
 
         return false;
+    }
+
+    /**
+     * Get the current user
+     * 
+     * @return UserModel|null
+     */
+    public function currentUser(): ?UserModel
+    {
+        if (!isset($_SESSION['user_id'])) {
+            return null;
+        }
+        
+        return UserModel::find($_SESSION['user_id']);
+    }
+
+    /**
+     * Find a user by their username
+     * 
+     * @param string $username
+     */
+    public function findByUsername($username): ?UserModel   
+    {
+        return UserModel::where('username', '=', $username)->first();
     }
 }

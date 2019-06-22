@@ -13,7 +13,9 @@
               <p class="font-italic">Sign in or <a href="/signup">create a new account</a></p>
 
               {% if error or success %}
-                <div class="alert {% if error %}alert-danger{% else %}alert-success{% endif %}" role="alert">
+                <div class="alert {% if error %}alert-danger{% else %}alert-success{% endif %} alert-dismissable">
+                  <a class="panel-close close" data-dismiss="alert">×</a>
+                  <i class="fa fa-coffee"></i>
                   {{ error }}
                   {{ success }}
                 </div>

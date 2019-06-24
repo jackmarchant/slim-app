@@ -1,3 +1,5 @@
+.PHONY: test
+
 PHINX_CONFIG=phinx.php
 PHINX_PATH=vendor/bin/phinx
 
@@ -10,3 +12,6 @@ create-migration:
 
 rollback:
 	php $(PHINX_PATH) rollback -c $(PHINX_CONFIG)
+
+test:
+	vendor/bin/phpunit --coverage-html cover

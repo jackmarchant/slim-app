@@ -1,0 +1,28 @@
+<phpunit 
+  backupGlobals="false"
+  backupStaticAttributes="false"
+  bootstrap="tests/bootstrap.php"
+  colors="true"
+  convertErrorsToExceptions="true"
+  convertNoticesToExceptions="true"
+  convertWarningsToExceptions="true"
+  processIsolation="false"
+  stopOnFailure="false"
+>
+    <logging>
+        <log type="coverage-html" target="cover" />
+    </logging>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">src/app/</directory>
+        </whitelist>
+    </filter>
+    <testsuites>
+      <testsuite name="Twigger Tests">
+        <directory>tests</directory>
+      </testsuite>
+    </testsuites>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+    </php>
+</phpunit>

@@ -1,15 +1,16 @@
 {
-    "name": "jackmarchant/slim-app",
+    "name": "jackmarchant/twigger",
     "version": "0.1",
     "license": "MIT",
     "authors": [{
         "email": "jack@jackmarchant.com",
         "name": "Jack Marchant"
     }],
-    "description": "A sample Slim App",
+    "description": "A rebuild of Twitter with Twig Template Engine (hence Twigger)",
     "autoload": {
         "psr-4": {
-            "App\\": "src/app/"
+            "App\\": "src/app/",
+            "Test\\": "tests/"
         }
     },
     "require": {
@@ -19,5 +20,8 @@
         "illuminate/database": "^5.8",
         "robmorgan/phinx": "^0.10.7",
         "sendgrid/sendgrid": "^7.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
     }
 }
